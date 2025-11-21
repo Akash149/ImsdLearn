@@ -1,0 +1,98 @@
+{# Reusable dialog component. Include with: {% include 'dialog.html' %} #}
+
+<div id="copilot-dialog" class="fixed inset-0 z-50 hidden items-center justify-center">
+  <div class="absolute inset-0 bg-black/50" aria-hidden="true" onclick="closeDialog()"></div>
+
+  <div id="copilot-dialog-box" class="relative w-full max-w-md mx-4 bg-white rounded-lg shadow-lg ring-1 ring-black/10 overflow-hidden">
+    <div class="flex items-start gap-3 p-4">
+      <div id="copilot-dialog-icon" class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-700">
+        <!-- icon inserted by JS -->
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <h3 id="copilot-dialog-title" class="text-lg font-medium text-gray-900">Title</h3>
+        <p id="copilot-dialog-message" class="mt-1 text-sm text-gray-600">Message</p>
+      </div>
+
+      <button type="button" class="ml-2 text-gray-400 hover:text-gray-700" onclick="closeDialog()" aria-label="Close dialog">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="border-t px-4 py-3 flex justify-end">
+      <button type="button" class="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700" onclick="closeDialog()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const icons = {
+      info: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 6.253a6 6 0 100 11.494 6 6 0 000-11.494z"/></svg>',
+      success: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+      error: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+      warning: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>'
+    };
+
+    window.showDialog = function(options){
+      // options: {title, message, type: 'info'|'success'|'error'|'warning', autoClose: bool, timeout: ms}
+      options = options || {};
+      const title = options.title || '';
+      const message = options.message || '';
+      const type = options.type || 'info';
+      const autoClose = !!options.autoClose;
+      const timeout = options.timeout || 4000;
+
+      const wrapper = document.getElementById('copilot-dialog');
+      const iconEl = document.getElementById('copilot-dialog-icon');
+      const titleEl = document.getElementById('copilot-dialog-title');
+      const msgEl = document.getElementById('copilot-dialog-message');
+      const box = document.getElementById('copilot-dialog-box');
+
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+
+      // set icon and colors
+      iconEl.innerHTML = icons[type] || icons.info;
+      // reset color classes
+      iconEl.className = 'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center';
+      box.classList.remove('ring-green-500','ring-red-500','ring-yellow-500','ring-blue-500');
+
+      if(type === 'success'){
+        iconEl.classList.add('bg-green-100','text-green-700');
+        box.classList.add('ring-2','ring-green-500');
+      } else if(type === 'error'){
+        iconEl.classList.add('bg-red-100','text-red-700');
+        box.classList.add('ring-2','ring-red-500');
+      } else if(type === 'warning'){
+        iconEl.classList.add('bg-yellow-100','text-yellow-700');
+        box.classList.add('ring-2','ring-yellow-500');
+      } else {
+        iconEl.classList.add('bg-blue-100','text-blue-700');
+        box.classList.add('ring-2','ring-blue-500');
+      }
+
+      wrapper.classList.remove('hidden');
+      wrapper.classList.add('flex');
+
+      // focus management
+      setTimeout(()=>{
+        const ok = wrapper.querySelector('button[onclick="closeDialog()"]');
+        if(ok) ok.focus();
+      },50);
+
+      if(autoClose){
+        setTimeout(closeDialog, timeout);
+      }
+    };
+
+    window.closeDialog = function(){
+      const wrapper = document.getElementById('copilot-dialog');
+      if(!wrapper) return;
+      wrapper.classList.remove('flex');
+      wrapper.classList.add('hidden');
+    };
+  })();
+</script>
