@@ -15,9 +15,9 @@
   <body class="w-full h-full p-2">
     {% include "header.html" %}
 
-    {% if request.path == "/home/" %}
+    {% if request.path == "/myapp/home/" %}
       <p>You are in Home Page</p>
-    {% elif request.path == "/analysis/" %}
+    {% elif request.path == "/myapp/analysis/" %}
       <p>You are in Analysis Page</p>
       <div class="flex flex-row justify-center">
         {% include "anlysisForm.html" %}
