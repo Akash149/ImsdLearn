@@ -6,6 +6,7 @@ class Analysis(models.Model):
 
     Fields are float values (use appropriate units in your UI, e.g. mg/L).
     """
+    id = models.AutoField(primary_key=True)
     ca = models.FloatField("Ca", default=0.0, help_text="Calcium value")
     mg = models.FloatField("Mg", default=0.0, help_text="Magnesium value")
     na = models.FloatField("Na", default=0.0, help_text="Sodium value")
@@ -32,3 +33,12 @@ class Analysis(models.Model):
             "others": float(self.others),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+    def from_dict(self, data):
+        """Populate fields from a dict of values."""
+        self.ca = float(data.get("ca", 0.0))
+        self.mg = float(data.get("mg", 0.0))
+        self.na = float(data.get("na", 0.0))
+        self.so4 = float(data.get("so4", 0.0))
+        self.others = float(data.get("others", 0.0))
+        return self
